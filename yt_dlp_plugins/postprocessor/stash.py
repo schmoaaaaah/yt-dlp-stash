@@ -1,5 +1,7 @@
 # ⚠ Don't use relative imports
 from yt_dlp.postprocessor.common import PostProcessor
+import stashapi.log as log
+from stashapi.stashapp import StashInterface
 
 # ℹ️ See the docstring of yt_dlp.postprocessor.common.PostProcessor
 
