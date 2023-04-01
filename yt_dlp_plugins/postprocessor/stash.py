@@ -4,6 +4,7 @@ import json
 from yt_dlp.postprocessor.common import PostProcessor
 import stashapi.log as log
 from stashapi.stashapp import StashInterface
+from time import sleep
 
 # ℹ️ See the docstring of yt_dlp.postprocessor.common.PostProcessor
 
@@ -40,12 +41,12 @@ class StashPP(PostProcessor):
         """
         variables = {"jobid": stash_meta_job["metadataScan"]}
         stash_job = self.stash.call_gql(query, variables)
-        while stash_job["data"]["findJob"] != None or stash_job["data"]["findJob"]["status"] != "FINISHED":
-            stash_job = self.stash.call_gql(query, variables)
+        while self.stash.call_gql(query, variables)["findJob"]["status"] != "FINISHED":
+            sleep(1)
         scene = self.stash.find_scenes({"path": {"modifier": "INCLUDES", "value": info["filepath"]}})
-        self.tag = self.stash.find_tags({"name": {"modifier": "INCLUDES", "value": "scrape"}})
+        self.tag = self.stash.find_tags({"name": {"modifier": "EQUALS", "value": "scrape"}})
         if len(self.tag) == 0:
-            self.tag = self.stash.create_tag({"name": "scrape"})
+            self.tag[0] = self.stash.create_tag({"name": "scrape"})
         update_scene = {
             "id": scene[0]["id"],
             "title": info["title"],
