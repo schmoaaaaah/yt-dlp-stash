@@ -3,6 +3,12 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/config/stash1/generated/download_stage" />
+      <excludeFolder url="file://$MODULE_DIR$/config/stash1/generated/interactive_heatmaps" />
+      <excludeFolder url="file://$MODULE_DIR$/config/stash1/generated/markers" />
+      <excludeFolder url="file://$MODULE_DIR$/config/stash1/generated/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/config/stash1/generated/transcodes" />
+      <excludeFolder url="file://$MODULE_DIR$/config/stash1/generated/vtt" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
