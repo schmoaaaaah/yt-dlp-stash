@@ -29,7 +29,8 @@ class StashPP(PostProcessor):
 
     # ℹ️ See docstring of yt_dlp.postprocessor.common.PostProcessor.run
     def run(self, info):
-        stash_meta_job = self.stash.metadata_scan()
+        stash_meta_job = self.stash.metadata_scan(info['requested_downloads'][0]['filepath'])
+        self.to_screen("Scanning metadata on path: " + info['requested_downloads'][0]['filepath'])
         query = """
         query FindJob($jobid:ID!){
         	findJob(input:{id:$jobid}){
@@ -40,21 +41,24 @@ class StashPP(PostProcessor):
         }
         """
         variables = {"jobid": stash_meta_job["metadataScan"]}
-        stash_job = self.stash.call_gql(query, variables)
         while self.stash.call_gql(query, variables)["findJob"]["status"] != "FINISHED":
-            sleep(1)
-        scene = self.stash.find_scenes({"path": {"modifier": "INCLUDES", "value": info["filepath"]}})
+            sleep(0.5)
+        scene = self.stash.find_scenes({"path": {"modifier": "EQUALS", "value": info['requested_downloads'][0]['filepath']}})
+        self.to_screen("Found scene with id: " + scene[0]["id"])
         self.tag = self.stash.find_tags({"name": {"modifier": "EQUALS", "value": "scrape"}})
         if len(self.tag) == 0:
             self.tag[0] = self.stash.create_tag({"name": "scrape"})
         update_scene = {
             "id": scene[0]["id"],
             "title": info["title"],
-            "details": info["description"],
             "url": info["webpage_url"],
-            "date": info["upload_date"],
             "tag_ids": [self.tag[0]["id"]],
             "cover_image": info["thumbnail"],
         }
+        if "description" in info:
+            update_scene["details"] = info["description"]
+        if "upload_date" in info:
+            update_scene["date"] = info["upload_date"]
         self.stash.update_scene(update_scene)
+        self.to_screen("Updatet Scene")
         return [], info
