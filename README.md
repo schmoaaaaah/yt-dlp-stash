@@ -24,6 +24,8 @@ To use this plugin, you must have a stash server running and add following to yo
 You might need to change `after_video` to `playlist` if you are downloading a playlist.
 I haven't tested this yet.
 
+The Processor expects the same path for the media in stash as it is downloaded.
+
 ## Development
 
 See the [Plugin Development](https://github.com/yt-dlp/yt-dlp/wiki/Plugin-Development) section of the yt-dlp wiki.

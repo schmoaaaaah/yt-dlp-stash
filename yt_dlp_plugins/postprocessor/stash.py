@@ -29,8 +29,8 @@ class StashPP(PostProcessor):
 
     # ℹ️ See docstring of yt_dlp.postprocessor.common.PostProcessor.run
     def run(self, info):
-        stash_meta_job = self.stash.metadata_scan(info['requested_downloads'][0]['filepath'])
-        self.to_screen("Scanning metadata on path: " + info['requested_downloads'][0]['filepath'])
+        stash_meta_job = self.stash.metadata_scan(info['requested_downloads'][0]['__finaldir'])
+        self.to_screen("Scanning metadata on path: " + info['requested_downloads'][0]['__finaldir'])
         query = """
         query FindJob($jobid:ID!){
         	findJob(input:{id:$jobid}){
