@@ -10,7 +10,7 @@
       <excludeFolder url="file://$MODULE_DIR$/config/stash1/generated/transcodes" />
       <excludeFolder url="file://$MODULE_DIR$/config/stash1/generated/vtt" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="yt-dlp-stash" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

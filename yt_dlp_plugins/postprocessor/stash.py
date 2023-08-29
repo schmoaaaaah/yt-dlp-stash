@@ -31,7 +31,7 @@ class StashPP(PostProcessor):
     def run(self, info):
         stash_meta_job = self.stash.metadata_scan(info['requested_downloads'][0]['__finaldir'])
         self.to_screen("Scanning metadata on path: " + info['requested_downloads'][0]['__finaldir'])
-        query = """
+        gql_query = """
         query FindJob($jobid:ID!){
         	findJob(input:{id:$jobid}){
         		status,
@@ -40,8 +40,8 @@ class StashPP(PostProcessor):
         	}
         }
         """
-        variables = {"jobid": stash_meta_job["metadataScan"]}
-        while self.stash.call_gql(query, variables)["findJob"]["status"] != "FINISHED":
+        gql_variables = {"jobid": int(stash_meta_job)}
+        while self.stash.call_gql(gql_query, gql_variables)["findJob"]["status"] != "FINISHED":
             sleep(0.5)
         scene = self.stash.find_scenes({"path": {"modifier": "EQUALS", "value": info['requested_downloads'][0]['filepath']}})
         self.to_screen("Found scene with id: " + scene[0]["id"])
@@ -58,7 +58,7 @@ class StashPP(PostProcessor):
         if "description" in info:
             update_scene["details"] = info["description"]
         if "upload_date" in info:
-            update_scene["date"] = info["upload_date"]
+            update_scene["date"] = info["upload_date"][0:4] + "-" + info["upload_date"][4:6] + "-" + info["upload_date"][6:8]
         self.stash.update_scene(update_scene)
         self.to_screen("Updatet Scene")
         return [], info
