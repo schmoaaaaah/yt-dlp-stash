@@ -3,6 +3,7 @@ from yt_dlp.postprocessor.common import PostProcessor
 import stashapi.log as log
 from stashapi.stashapp import StashInterface
 from time import sleep
+from pathlib import Path
 
 # ℹ️ See the docstring of yt_dlp.postprocessor.common.PostProcessor
 
@@ -10,7 +11,7 @@ from time import sleep
 
 
 class StashPP(PostProcessor):
-    def __init__(self, downloader=None, scheme: str='http', host: str='localhost', port: int=9999, apikey: str='', sessioncookie: str='', **kwargs):
+    def __init__(self, downloader=None, scheme: str='http', host: str='localhost', port: int=9999, apikey: str='', sessioncookie: str='', searchpathoverride: str='', **kwargs):
         # ⚠ Only kwargs can be passed from the CLI, and all argument values will be string
         # Also, "downloader", "when" and "key" are reserved names
         super().__init__(downloader)
@@ -27,12 +28,19 @@ class StashPP(PostProcessor):
         elif sessioncookie:
             stash_args["SessionCookie"] = sessioncookie
         self.stash = StashInterface(stash_args)
+        self.searchpathoverride = searchpathoverride
 
     # ℹ️ See docstring of yt_dlp.postprocessor.common.PostProcessor.run
     def run(self, info):
-        self.to_screen("Scanning metadata on path: " + info['requested_downloads'][0]['__finaldir'])
+        if self.searchpathoverride != '':
+            filepath = (self.searchpathoverride + info['requested_downloads'][0]['filename'][1:]).replace("//","/")
+            dirpath = "/".join(filepath.split("/")[0:-1])
+        else:
+            filepath = info['requested_downloads'][0]['filepath']
+            dirpath = info['requested_downloads'][0]['__finaldir']
+        self.to_screen("Scanning metadata on path: " + dirpath)
         try:
-            stash_meta_job = self.stash.metadata_scan(paths=info['requested_downloads'][0]['__finaldir'],flags={
+            stash_meta_job = self.stash.metadata_scan(paths=dirpath,flags={
                 "scanGenerateCovers": False,
                 "scanGeneratePreviews":False,
                 "scanGenerateImagePreviews": False,
@@ -46,7 +54,7 @@ class StashPP(PostProcessor):
             return [], info
         while self.stash.find_job(stash_meta_job)["status"] != "FINISHED":
             sleep(0.5)
-        scene = self.stash.find_scenes({"path": {"modifier": "EQUALS", "value": info['requested_downloads'][0]['filepath']}})
+        scene = self.stash.find_scenes({"path": {"modifier": "EQUALS", "value": filepath}})
         self.to_screen("Found scene with id: " + scene[0]["id"])
         self.tag = self.stash.find_tags({"name": {"modifier": "EQUALS", "value": "scrape"}})
         if len(self.tag) == 0:

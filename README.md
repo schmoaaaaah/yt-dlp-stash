@@ -31,16 +31,25 @@ The apikey is optional and can be left out if you dont have authentication enabl
 |---|---|---|---|
 |scheme|http|x|scheme at which stash is available. either http or https|
 |host|localhost|x|fqdn of the stash instance|
-|port|9999|x| port on which stash is accessable|
-|apikey||| api key which should be used
+|port|9999|x|port on which stash is accessable|
+|apikey|||api key which should be used
 |sessioncookie|||sessioncookie which should be used|
+|[searchpathoverride](####searchpathoverride)|||override the relative path for the search in stash
+|[when](https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#post-processing-options)|||when postprocessor is called
 
-if api key and sessioncookie are provided api key is preferred.
+#### apikey & sessioncookie
+if api key and **sessioncookie** are provided api key is preferred.
 
+#### searchpathoverride
+if you set the **searchpathoverride** the relative path of the downloaded file will be overriden when interacting with stash.   
+so if you define `yt-dlp -o ./media/video.mp4` and set **searchpathoverride** to `/mnt/nas` then stash will look for `/mnt/nas/media/video.mp4`.   
+> special case `/`:   
+> if you define `yt-dlp -o ./media/video.mp4` and set **searchpathoverride** to `/` then stash will look for `/media/video.mp4`.   
+by default the Processor expects the same path for the media in stash as it is downloaded.
+
+#### when
 You might need to change `after_video` to `playlist` if you are downloading a playlist.
 I haven't tested this yet.
-
-The Processor expects the same path for the media in stash as it is downloaded.
 
 ## Development
 
