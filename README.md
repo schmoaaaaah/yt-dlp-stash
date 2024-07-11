@@ -5,7 +5,7 @@ See [yt-dlp plugins](https://github.com/yt-dlp/yt-dlp#plugins) for more details.
 
 ## Installation
 
-Requires yt-dlp `2023.01.02` or above as well as stashapp-tools.
+Requires yt-dlp as well as stashapp-tools.
 
 You can install this package with pip:
 ```shell
@@ -19,8 +19,13 @@ See [installing yt-dlp plugins](https://github.com/yt-dlp/yt-dlp#installing-plug
 
 To use this plugin, you must have a stash server running and add following to your yt-dlp command:
 ```shell
---use-postprocessor Stash:stashurl="http:stash:9999"\;when=after_video
+--use-postprocessor Stash:scheme="http"\;host="stash"\;port="9999"\;apikey="example_key"\;when=after_video
 ```
+The apikey is optional and can be left out if you dont have authentication enabled.
+```shell
+--use-postprocessor Stash:scheme="http"\;host="stash"\;port="9999"\;when=after_video
+```
+
 You might need to change `after_video` to `playlist` if you are downloading a playlist.
 I haven't tested this yet.
 
