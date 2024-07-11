@@ -1,3 +1,18 @@
+[project]
+name = "yr-dlp-stash"
+version = "1.0.0"
+readme = "README.md"
+authors = [
+  { name="Schmoaaaaah", email="schmoaaaaah@r4nd0.com" },
+]
+license = {file = "LICENSE"}
+requires-python = ">= 3.8"
+dependencies = [
+  "yt-dlp>=2024.7.9",
+  "stashapp-tools==0.2.46"
+]
+
+
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
