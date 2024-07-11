@@ -10,6 +10,7 @@ Requires yt-dlp as well as stashapp-tools.
 You can install this package with pip:
 ```shell
 python3 -m pip install -U https://github.com/schmoaaaaah/yt-dlp-stash/archive/master.zip
+python3 -m pip install yt-dlp-stash
 ```
 
 See [installing yt-dlp plugins](https://github.com/yt-dlp/yt-dlp#installing-plugins) for the other methods this plugin package can be installed.
