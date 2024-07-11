@@ -1,2 +1,2 @@
-yt-dlp
-stashapp-tools
+yt-dlp>=2024.7.9
+stashapp-tools==0.2.46
