@@ -44,17 +44,6 @@ class StashPP(PostProcessor):
         except Exception as e:
             self.to_screen("Error on metadata scan: " + str(e))
             return [], info
-        #gql_query = """
-        #query FindJob($jobid:ID!){
-       # 	findJob(input:{id:$jobid}){
-       # 		status,
-       # 		progress,
-       # 		id
-       # 	}
-      #  }
-      #  """
-        #gql_variables = {"jobid": int(stash_meta_job)}
-        #while self.stash.call_gql(gql_query, gql_variables)["findJob"]["status"] != "FINISHED":
         while self.stash.find_job(stash_meta_job)["status"] != "FINISHED":
             sleep(0.5)
         scene = self.stash.find_scenes({"path": {"modifier": "EQUALS", "value": info['requested_downloads'][0]['filepath']}})

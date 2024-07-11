@@ -25,6 +25,17 @@ The apikey is optional and can be left out if you dont have authentication enabl
 ```shell
 --use-postprocessor Stash:scheme="http"\;host="stash"\;port="9999"\;when=after_video
 ```
+### Variables
+
+|name|default|required|description|
+|---|---|---|---|
+|scheme|http|x|scheme at which stash is available. either http or https|
+|host|localhost|x|fqdn of the stash instance|
+|port|9999|x| port on which stash is accessable|
+|apikey||| api key which should be used
+|sessioncookie|||sessioncookie which should be used|
+
+if api key and sessioncookie are provided api key is preferred.
 
 You might need to change `after_video` to `playlist` if you are downloading a playlist.
 I haven't tested this yet.
