@@ -35,7 +35,7 @@ The apikey is optional and can be left out if you dont have authentication enabl
 |port|9999|x|port on which stash is accessable|
 |apikey|||api key which should be used
 |sessioncookie|||sessioncookie which should be used|
-|[searchpathoverride](####searchpathoverride)|||override the relative path for the search in stash
+|[searchpathoverride](#searchpathoverride)|||override the relative path for the search in stash
 |[when](https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#post-processing-options)|||when postprocessor is called
 
 #### apikey & sessioncookie
