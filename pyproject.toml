@@ -1,5 +1,5 @@
 [project]
-name = "yr-dlp-stash"
+name = "yt-dlp-stash"
 version = "1.0.0"
 readme = "README.md"
 authors = [
