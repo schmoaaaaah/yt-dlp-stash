@@ -37,7 +37,7 @@ The apikey is optional and can be left out if you dont have authentication enabl
 |sessioncookie|||sessioncookie which should be used|
 |[searchpathoverride](#searchpathoverride)|||override the relative path for the search in stash
 |[when](https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#post-processing-options)|||when postprocessor is called
-|[legacy]|false|---|use legacy postprocessor|
+|[legacy](#legacy)|false|---|use legacy postprocessor|
 
 #### apikey & sessioncookie
 if api key and **sessioncookie** are provided api key is preferred.
