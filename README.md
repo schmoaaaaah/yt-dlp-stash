@@ -37,6 +37,7 @@ The apikey is optional and can be left out if you dont have authentication enabl
 |sessioncookie|||sessioncookie which should be used|
 |[searchpathoverride](#searchpathoverride)|||override the relative path for the search in stash
 |[when](https://github.com/yt-dlp/yt-dlp?tab=readme-ov-file#post-processing-options)|||when postprocessor is called
+|[legacy]|false|---|use legacy postprocessor|
 
 #### apikey & sessioncookie
 if api key and **sessioncookie** are provided api key is preferred.
@@ -51,6 +52,9 @@ by default the Processor expects the same path for the media in stash as it is d
 #### when
 You might need to change `after_video` to `playlist` if you are downloading a playlist.
 I haven't tested this yet.
+
+#### legacy
+The legacy version of the postprocessor uses data directly from yt-dlp. The new version uses Stash's GraphQL to scrape the URL after import. (Note: you must install any [CommunityScrapers](https://github.com/stashapp/CommunityScrapers) you plan to use within Stash first for this to work properly)
 
 ## Development
 
