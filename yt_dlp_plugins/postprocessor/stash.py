@@ -11,13 +11,13 @@ from pathlib import Path
 
 
 class StashPP(PostProcessor):
-    def __init__(self, downloader=None, scheme: str='http', host: str='localhost', port: int=9999, apikey: str='', sessioncookie: str='', searchpathoverride: str='', legacy: str='false', **kwargs):
+    def __init__(self, downloader=None, scheme: str='http', host: str='localhost', port: int=9999, apikey: str='', sessioncookie: str='', searchpathoverride: str='', scrapemethod: str='yt_dlp', **kwargs):
         # ⚠ Only kwargs can be passed from the CLI, and all argument values will be string
         # Also, "downloader", "when" and "key" are reserved names
         super().__init__(downloader)
         self.tag = None
         self._kwargs = kwargs
-        self.legacy = legacy.lower() == 'true'
+        self.scrapemethod = scrapemethod
         stash_args = {
                 "Scheme": scheme,
                 "Host": host,
@@ -32,13 +32,13 @@ class StashPP(PostProcessor):
         self.searchpathoverride = searchpathoverride
 
     def run(self, info):
-        if self.legacy:
-            return self.run_legacy(info)
-        # Updated logic uses Stash GraphQL API to update the scene
-        return self.run_updated(info)
+        if self.scrapemethod == 'stash':
+            # Updated logic uses Stash GraphQL API to update the scene
+            return self.stash_scrape(info)
+        return self.ytdlp_scrape(info)
 
     # ℹ️ See docstring of yt_dlp.postprocessor.common.PostProcessor.run
-    def run_legacy(self, info):
+    def ytdlp_scrape(self, info):
         if self.searchpathoverride != '':
             filepath = (self.searchpathoverride + info['requested_downloads'][0]['filename'][1:]).replace("//","/")
             dirpath = "/".join(filepath.split("/")[0:-1])
@@ -81,7 +81,7 @@ class StashPP(PostProcessor):
         self.to_screen("Updatet Scene")
         return [], info
     
-    def run_updated(self, info):
+    def stash_scrape(self, info):
         try:
             # Step 1: Determine the file path and directory
             if self.searchpathoverride != '':
