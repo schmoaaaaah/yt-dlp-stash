@@ -1,20 +1,20 @@
-version: '3.3'
+version: "3.3"
 services:
-    stash:
-        image: stashapp/stash:latest
-        container_name: stash
-        restart: unless-stopped
-        ports:
-            - 9999:9999
-        volumes:
-            - ./media:/media
-            - ./config/stash1:/root/.stash
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=Europe/Berlin
-    download:
-        build: .
-        container_name: download
-        volumes:
-            -   ./media:/media
+  stash:
+    image: stashapp/stash:latest
+    container_name: stash
+    restart: unless-stopped
+    ports:
+      - 9999:9999
+    volumes:
+      - ./media:/media
+      - ./config/stash1:/root/.stash
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+  download:
+    build: .
+    container_name: download
+    volumes:
+      - ./media:/media
