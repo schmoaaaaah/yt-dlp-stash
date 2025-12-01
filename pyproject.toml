@@ -1,11 +1,11 @@
 [project]
 name = "yt-dlp-stash"
-version = "2.0.0"
+version = "2.1.0"
 readme = "README.md"
 authors = [{ name = "Schmoaaaaah", email = "schmoaaaaah@r4nd0.com" }]
 license = { file = "LICENSE" }
 requires-python = ">= 3.11"
-dependencies = ["yt-dlp>=2025.03.31", "stashapp-tools>=0.2.58"]
+dependencies = ["yt-dlp>=2025.03.31", "stashapp-tools>=0.2.59"]
 
 
 [build-system]
@@ -14,3 +14,15 @@ build-backend = "setuptools.build_meta"
 
 [tool.distutils.bdist_wheel]
 universal = true
+
+[tool.pyright]
+include = ["yt_dlp_plugins"]
+pythonVersion = "3.11"
+reportOptionalMemberAccess = false
+reportArgumentType = false
+reportAssignmentType = false
+reportIndexIssue = false
+reportIncompatibleMethodOverride = false
+reportIncompatibleVariableOverride = false
+reportAttributeAccessIssue = false
+reportCallIssue = false
