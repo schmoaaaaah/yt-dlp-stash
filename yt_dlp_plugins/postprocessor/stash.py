@@ -43,32 +43,27 @@ class StashPP(PostProcessor):
             return self.stash_scrape(info)
         return self.ytdlp_scrape(info)
 
-    # ℹ️ See docstring of yt_dlp.postprocessor.common.PostProcessor.run
-    def ytdlp_scrape(self, info):
+    def ytdlp_scrape(self, info, scanpath: bool = True, scene=[]):
+        scene = scene
         filepath, dirpath = self._get_paths(info)
-        self.to_screen("Scanning metadata on path: " + dirpath)
-        try:
-            stash_meta_job = self.stash.metadata_scan(
-                paths=dirpath,
-                flags={
-                    "scanGenerateCovers": False,
-                    "scanGeneratePreviews": False,
-                    "scanGenerateImagePreviews": False,
-                    "scanGenerateSprites": False,
-                    "scanGeneratePhashes": False,
-                    "scanGenerateThumbnails": False,
-                    "scanGenerateClipPreviews": False,
-                },
-            )
-        except Exception as e:
-            self.to_screen("Error on metadata scan: " + str(e))
-            return [], info
-        while self.stash.find_job(stash_meta_job)["status"] != "FINISHED":
-            sleep(0.5)
-        scene = self.stash.find_scenes(
-            {"path": {"modifier": "EQUALS", "value": filepath}}
-        )
-        self.to_screen("Found scene with id: " + scene[0]["id"])
+        if len(scene) == 0:
+            if scanpath:
+                try:
+                    self._scan_path(dirpath)
+                except Exception as e:
+                    self.write_debug(f"[Debug] Error during metadata scan: {e}")
+                    return [], info
+
+            # Step 5: Search for the scene by file path
+            try:
+                scene = self._search_scene_by_path(filepath)
+            except Exception as e:
+                self.to_screen(
+                    "[Error] No scene found after metadata scan. Please verify the path and metadata settings."
+                )
+                self.write_debug(f"[Debug] Error during scene search: {e}")
+                return [], info
+        self.write_debug(f"Found scene with id: {scene[0]['id']}")
         self.tag = self.stash.find_tags(
             {"name": {"modifier": "EQUALS", "value": "scrape"}}
         )
@@ -76,11 +71,13 @@ class StashPP(PostProcessor):
             self.tag = [self.stash.create_tag({"name": "scrape"})]
         update_scene = {
             "id": scene[0]["id"],
-            "title": info["title"],
             "url": info["webpage_url"],
             "tag_ids": [self.tag[0]["id"]],
-            "cover_image": info["thumbnail"],
         }
+        if "title" in info:
+            update_scene["title"] = info["title"]
+        if "thumbnail" in info:
+            update_scene["cover_image"] = info["thumbnail"]
         if "description" in info:
             update_scene["details"] = info["description"]
         if "upload_date" in info:
@@ -92,7 +89,7 @@ class StashPP(PostProcessor):
                 + info["upload_date"][6:8]
             )
         self.stash.update_scene(update_scene)
-        self.to_screen("Updatet Scene")
+        self.to_screen(f"[Info] Updated Scene with id: {scene[0]['id']}")
         return [], info
 
     def stash_scrape(self, info):
@@ -104,42 +101,20 @@ class StashPP(PostProcessor):
             self.write_debug(f"[Debug] Directory for metadata scan: {dirpath}")
 
             # Step 3: Metadata scan for the input file
-            self.to_screen("[Info] Initiating metadata scan on path: " + dirpath)
-            stash_meta_job = self.stash.metadata_scan(
-                paths=dirpath,
-                flags={
-                    "scanGenerateCovers": False,
-                    "scanGeneratePreviews": False,
-                    "scanGenerateImagePreviews": False,
-                    "scanGenerateSprites": False,
-                    "scanGeneratePhashes": False,
-                    "scanGenerateThumbnails": False,
-                    "scanGenerateClipPreviews": False,
-                },
-            )
-            self.write_debug(f"[Debug] Metadata scan job ID: {stash_meta_job}")
+            try:
+                self._scan_path(dirpath)
+            except Exception as e:
+                self.write_debug(f"[Debug] Error during metadata scan: {e}")
+                return [], info
 
-            # Step 4: Wait until metadata scan is complete
-            while True:
-                job_status = self.stash.find_job(stash_meta_job)
-                self.write_debug(f"[Debug] Metadata scan job status: {job_status}")
-                if job_status["status"] == "FINISHED":
-                    break
-                elif job_status["status"] == "FAILED":
-                    self.to_screen("[Error] Metadata scan job failed.")
-                    return [], info
-                sleep(0.5)
-
-            # Step 5: Find the newly created scene
-            self.write_debug(f"[Debug] Looking for scene with path: {filepath}")
-            scene = self.stash.find_scenes(
-                {"path": {"modifier": "EQUALS", "value": filepath}}
-            )
-            self.write_debug(f"[Debug] Scene search result: {scene}")
-            if not scene or len(scene) == 0:
+            # Step 5: Search for the scene by file path
+            try:
+                scene = self._search_scene_by_path(filepath)
+            except Exception as e:
                 self.to_screen(
                     "[Error] No scene found after metadata scan. Please verify the path and metadata settings."
                 )
+                self.write_debug(f"[Debug] Error during scene search: {e}")
                 return [], info
 
             scene_id = scene[0]["id"]
@@ -156,7 +131,10 @@ class StashPP(PostProcessor):
             scene_data = self._scrape_scene_by_url(info["webpage_url"])
 
             if not scene_data:
-                self.report_warning("[Warning] Error or no data found during scraping.")
+                self.report_warning(
+                    "[Warning] Error or no data found during scraping. Falling back to yt-dlp data."
+                )
+                self.ytdlp_scrape(info, scanpath=False, scene=scene)
                 return [], info
 
             # Step 7: Update the scene data using the scraped information
@@ -304,11 +282,12 @@ class StashPP(PostProcessor):
             self.write_debug(f"[Debug] Full GraphQL response: {response}")
 
             # Adjust the response check to accommodate both formats
-            scrape_scene_data = None
-            if "data" in response and isinstance(response["data"], dict):
+            if response and "data" in response and isinstance(response["data"], dict):
                 scrape_scene_data = response["data"].get("scrapeSceneURL")
-            elif "scrapeSceneURL" in response:
+            elif response and "scrapeSceneURL" in response:
                 scrape_scene_data = response["scrapeSceneURL"]
+            else:
+                scrape_scene_data = None
 
             # if scrape_scene_data is None:
             #     self.to_screen(
@@ -337,12 +316,12 @@ class StashPP(PostProcessor):
         absolute_path = str(Path(info["filepath"]).absolute())
         if self.searchpathoverride != "":
             if absolute_path.startswith(self.searchpathoverride):
-                self.to_screen("[Info] Removing searchpathoverride from filepath")
+                self.write_debug("[Debug] Removing searchpathoverride from filepath")
                 filepath = absolute_path.replace(self.searchpathoverride, "", 1)
                 dirpath = str(Path(filepath).parent)
                 return filepath, dirpath
             else:
-                self.to_screen("[Info] prepending searchpathoverride to filepath")
+                self.write_debug("[Debug] prepending searchpathoverride to filepath")
                 filepath = self.searchpathoverride + absolute_path
                 dirpath = str(Path(filepath).parent)
                 return filepath, dirpath
@@ -350,3 +329,40 @@ class StashPP(PostProcessor):
             filepath = info["filepath"]
             dirpath = str(Path(info["filepath"]).parent)
             return filepath, dirpath
+
+    def _scan_path(self, path: str):
+        self.to_screen(f"[Info] Scanning metadata on path: {path}")
+        try:
+            stash_meta_job = self.stash.metadata_scan(
+                paths=path,
+                flags={
+                    "scanGenerateCovers": False,
+                    "scanGeneratePreviews": False,
+                    "scanGenerateImagePreviews": False,
+                    "scanGenerateSprites": False,
+                    "scanGeneratePhashes": False,
+                    "scanGenerateThumbnails": False,
+                    "scanGenerateClipPreviews": False,
+                },
+            )
+            while True:
+                job_status = self.stash.find_job(stash_meta_job)
+                self.write_debug(f"[Debug] Metadata scan job status: {job_status}")
+                if job_status["status"] == "FINISHED":
+                    break
+                elif job_status["status"] == "FAILED":
+                    raise Exception("Metadata scan job failed")
+                sleep(0.5)
+        except Exception as e:
+            raise Exception(f"Error during metadata scan: {e}")
+
+    def _search_scene_by_path(self, filepath: str):
+        # Step 5: Find the newly created scene
+        self.write_debug(f"[Debug] Looking for scene with path: {filepath}")
+        scene = self.stash.find_scenes(
+            {"path": {"modifier": "EQUALS", "value": filepath}}
+        )
+        self.write_debug(f"[Debug] Scene search result: {scene}")
+        if not scene or len(scene) == 0:
+            raise Exception("No scene found")
+        return scene

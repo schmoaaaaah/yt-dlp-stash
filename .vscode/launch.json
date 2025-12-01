@@ -1,0 +1,27 @@
+{
+    // Verwendet IntelliSense zum Ermitteln möglicher Attribute.
+    // Zeigen Sie auf vorhandene Attribute, um die zugehörigen Beschreibungen anzuzeigen.
+    // Weitere Informationen finden Sie unter https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: yt-dlp standard",
+            "type": "debugpy",
+            "request": "launch",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/"
+            },
+            "module": "yt_dlp",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "-o",
+                "./media/%(webpage_url_domain)s/%(uploader)s/%(title)s.%(ext)s",
+                "--use-postprocessor",
+                "Stash:scheme=http;host=localhost;port=9999;scrapemethod=stash;searchpathoverride=${workspaceFolder}",
+                "--write-info-json",
+                "--add-metadata",
+                "https://www.pornhub.com/view_video.php?viewkey=67d153c253a79"
+            ]
+        }
+    ]
+}

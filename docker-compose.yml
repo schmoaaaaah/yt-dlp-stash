@@ -1,4 +1,3 @@
-version: "3.3"
 services:
   stash:
     image: stashapp/stash:latest
