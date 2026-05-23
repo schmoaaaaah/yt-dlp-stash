@@ -131,16 +131,16 @@ wheels = [
 
 [[package]]
 name = "yt-dlp"
-version = "2025.11.12"
+version = "2026.3.17"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/cf/41/53ad8c6e74d6627bd598dfbb8ad7c19d5405e438210ad0bbaf1b288387e7/yt_dlp-2025.11.12.tar.gz", hash = "sha256:5f0795a6b8fc57a5c23332d67d6c6acf819a0b46b91a6324bae29414fa97f052", size = 3076928, upload-time = "2025-11-12T01:00:38.43Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8b/34/7c6b4e3f89cb6416d2cd7ab6dab141a1df97ab0fb22d15816db2c92148c9/yt_dlp-2026.3.17.tar.gz", hash = "sha256:ba7aa31d533f1ffccfe70e421596d7ca8ff0bf1398dc6bb658b7d9dec057d2c9", size = 3119221, upload-time = "2026-03-17T23:43:00.244Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5f/16/fdebbee6473473a1c0576bd165a50e4a70762484d638c1d59fa9074e175b/yt_dlp-2025.11.12-py3-none-any.whl", hash = "sha256:b47af37bbb16b08efebb36825a280ea25a507c051f93bf413a6e4a0e586c6e79", size = 3279151, upload-time = "2025-11-12T01:00:35.813Z" },
+    { url = "https://files.pythonhosted.org/packages/cd/13/5093bcb954878e50f7217fd2ab94282b53934022e4e4a03265582da83bf5/yt_dlp-2026.3.17-py3-none-any.whl", hash = "sha256:32992db94303a8a5d211a183f2174834fe7f8c29d83ed2e7a324eae97a8f26d8", size = 3315134, upload-time = "2026-03-17T23:42:57.863Z" },
 ]
 
 [[package]]
 name = "yt-dlp-stash"
-version = "2.0.0"
+version = "2.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "stashapp-tools" },
@@ -149,6 +149,6 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "stashapp-tools", specifier = ">=0.2.58" },
+    { name = "stashapp-tools", specifier = ">=0.2.59" },
     { name = "yt-dlp", specifier = ">=2025.3.31" },
 ]
