@@ -1,5 +1,5 @@
 [tools]
-python = "3.11"
+python = "3.15.1"
 
 [env]
 _.python.venv = { path = ".venv", create = true }
